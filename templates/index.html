@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Generador de Cadenas</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-light">
+    <div class="container py-4">
+      <h1 class="text-center mb-4">Gestión de Vocabularios</h1>
+
+      <!-- Agregar Vocabulario -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">Agregar Vocabulario</div>
+        <div class="card-body">
+          <form method="post" class="row g-3">
+            <input type="hidden" name="action" value="add_vocab" />
+            <div class="col-md-4">
+              <label class="form-label">Nombre</label>
+              <input type="text" name="nombre" class="form-control" required />
+            </div>
+            <div class="col-md-8">
+              <label class="form-label">Símbolos (separados por coma)</label>
+              <input
+                type="text"
+                name="simbolos"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-success">Agregar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Vocabularios Registrados -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+          Vocabularios Registrados
+        </div>
+        <div class="card-body">
+          {% if vocabularios %}
+          <ul class="list-group">
+            {% for nombre, simbolos in vocabularios.items() %}
+            <li class="list-group-item">
+              <strong>{{nombre}}</strong> → {{ simbolos }}
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted">No hay vocabularios registrados aún.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      {% if vocabularios %}
+      <!-- Generar cadenas únicas -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">Generar Cadenas Únicas</div>
+        <div class="card-body">
+          <form method="post" class="row g-3">
+            <input type="hidden" name="action" value="generar_cadenas" />
+            <div class="col-md-6">
+              <label class="form-label">Selecciona vocabulario</label>
+              <select name="vocab" class="form-select">
+                {% for nombre in vocabularios.keys() %}
+                <option value="{{nombre}}">{{nombre}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Cantidad de cadenas</label>
+              <input
+                type="number"
+                name="cantidad_cadenas"
+                min="1"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-primary">Generar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Generar Universo del Discurso -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+          Generar Universo del Discurso
+        </div>
+        <div class="card-body">
+          <form method="post" class="row g-3">
+            <input type="hidden" name="action" value="generar_universo" />
+            <div class="col-md-8">
+              <label class="form-label">Selecciona vocabulario</label>
+              <select name="vocab" class="form-select">
+                {% for nombre in vocabularios.keys() %}
+                <option value="{{nombre}}">{{nombre}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-12 text-end">
+              <button type="submit" class="btn btn-warning">
+                Generar Universo
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Resultados -->
+      {% if resultado %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-success text-white">Cadenas Generadas</div>
+        <div class="card-body">
+          <ul class="list-group">
+            {% for cad in resultado %}
+            <li class="list-group-item">{{ cad }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endif %} {% if universo %}
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-danger text-white">
+          Universo del Discurso
+        </div>
+        <div class="card-body">
+          <pre class="bg-light p-3 border rounded">{{ universo }}</pre>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
