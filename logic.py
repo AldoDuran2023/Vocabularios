@@ -61,4 +61,3 @@ def generar_universo(nombre_vocab, minimo=20):
         longitud += 1
 
     return f"W({nombre_vocab}) = {{" + ",".join(universo[:minimo]) + "}}"
-
