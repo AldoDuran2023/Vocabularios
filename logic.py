@@ -1,53 +1,63 @@
 import random
 
 # Diccionario global de vocabularios
-vocabularios = {} # diccionario vacio
+vocabularios = {}  # diccionario vacío
 
-def agregar_vocabulario(nombre, simbolos_str):
+def agregar_vocabulario(nombre, simbolos_str, cantidad_esperada):
+    # separar, limpiar espacios y eliminar duplicados
     simbolos = [s.strip() for s in simbolos_str.split(",") if s.strip()]
-    simbolos = list(set(simbolos))  # elimina duplicados
+    simbolos = list(dict.fromkeys(simbolos))  # elimina duplicados, mantiene orden
+    simbolos = sorted(simbolos)  # para consistencia
+
     if not simbolos:
-        return False
+        return False, "Error: Debes ingresar al menos un símbolo válido."
+
+    if len(simbolos) != cantidad_esperada:
+        return False, f"Error: Dijiste {cantidad_esperada} signos, pero ingresaste {len(simbolos)} únicos."
+
     vocabularios[nombre] = simbolos
-    return True
+    return True, f"Vocabulario {nombre} agregado correctamente."
+
 
 def obtener_vocabularios():
     return vocabularios
 
-def generar_cadenas_diferentes(nombre, cantidad):
-    if nombre not in vocabularios:
-        return []
-    
-    max_longitud = cantidad * 2 
+def generar_cadenas_diferentes(nombre_vocab, cantidad):
+    if nombre_vocab not in vocabularios:
+        return ["Error: Vocabulario no existe"]
 
-    simbolos = vocabularios[nombre]
+    simbolos = vocabularios[nombre_vocab]
     cadenas = []
-    longitudes_usadas = set()
 
-    while len(cadenas) < cantidad:
-        longitud = random.randint(1, max_longitud)
-        if longitud in longitudes_usadas:
-            continue
-        cadena = "".join(random.choice(simbolos) for _ in range(longitud))
-        if cadena not in cadenas:
-            cadenas.append(cadena)
-            longitudes_usadas.add(longitud)
+    for _ in range(cantidad):
+        # Elegimos una longitud aleatoria de cadena (ej: entre 1 y 5 símbolos)
+        longitud = random.randint(1, 5)
+
+        # La cadena se forma concatenando símbolos del vocabulario
+        cadena_simbolos = random.choices(simbolos, k=longitud)
+
+        # Guardamos tanto la cadena unida como su "longitud lógica"
+        cadena = "".join(cadena_simbolos)
+        cadenas.append(f"{cadena}   (longitud: {len(cadena_simbolos)})")
 
     return cadenas
 
-def generar_universo(nombre, cantidad=21):
+def generar_universo(nombre, cantidad=20):
+    """
+    Genera al menos 'cantidad' cadenas únicas para el universo del discurso W(v).
+    """
     if nombre not in vocabularios:
-        return "U = {}"
+        return f"W({nombre}) = {{}}"
 
-    max_longitud = cantidad * 2 
-    
     simbolos = vocabularios[nombre]
     universo = set()
+    longitud_actual = 1
 
+    # generar cadenas incrementando longitudes
     while len(universo) < cantidad:
-        longitud = random.randint(1, max_longitud)
-        cadena = "".join(random.choice(simbolos) for _ in range(longitud))
+        cadena = "".join(random.choice(simbolos) for _ in range(longitud_actual))
         universo.add(cadena)
+        longitud_actual += 1
 
     universo_str = ", ".join(sorted(universo))
-    return f"U = {{ {universo_str} }}"
+    return f"W({nombre}) = {{ {universo_str} }}"
