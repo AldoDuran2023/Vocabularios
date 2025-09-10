@@ -29,35 +29,36 @@ def generar_cadenas_diferentes(nombre_vocab, cantidad):
     simbolos = vocabularios[nombre_vocab]
     cadenas = []
 
-    for _ in range(cantidad):
-        # Elegimos una longitud aleatoria de cadena (ej: entre 1 y 5 símbolos)
-        longitud = random.randint(1, 5)
-
-        # La cadena se forma concatenando símbolos del vocabulario
+    # Aseguramos longitudes únicas desde 1 hasta "cantidad"
+    for longitud in range(1, cantidad + 1):
+        # Se construye una cadena con "longitud" símbolos
         cadena_simbolos = random.choices(simbolos, k=longitud)
-
-        # Guardamos tanto la cadena unida como su "longitud lógica"
         cadena = "".join(cadena_simbolos)
-        cadenas.append(f"{cadena}   (longitud: {len(cadena_simbolos)})")
+        cadenas.append(f"{cadena}   (longitud: {longitud})")
 
     return cadenas
 
-def generar_universo(nombre, cantidad=20):
-    """
-    Genera al menos 'cantidad' cadenas únicas para el universo del discurso W(v).
-    """
-    if nombre not in vocabularios:
-        return f"W({nombre}) = {{}}"
+def generar_universo(nombre_vocab, minimo=20):
+    if nombre_vocab not in vocabularios:
+        return "Error: Vocabulario no existe"
 
-    simbolos = vocabularios[nombre]
-    universo = set()
-    longitud_actual = 1
+    simbolos = vocabularios[nombre_vocab]
+    universo = []
 
-    # generar cadenas incrementando longitudes
-    while len(universo) < cantidad:
-        cadena = "".join(random.choice(simbolos) for _ in range(longitud_actual))
-        universo.add(cadena)
-        longitud_actual += 1
+    def generar_cadenas(actual, longitud):
+        if len(universo) >= minimo:
+            return
+        if longitud == 0:
+            if actual != "":
+                universo.append(actual)
+            return
+        for s in simbolos:
+            generar_cadenas(actual + s, longitud - 1)
 
-    universo_str = ", ".join(sorted(universo))
-    return f"W({nombre}) = {{ {universo_str} }}"
+    longitud = 1
+    while len(universo) < minimo:
+        generar_cadenas("", longitud)
+        longitud += 1
+
+    return f"W({nombre_vocab}) = {{" + ",".join(universo[:minimo]) + "}}"
+
