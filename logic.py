@@ -2,8 +2,25 @@ import random
 
 # Diccionario global de vocabularios
 vocabularios = {}  # diccionario vacío
+cantidad_vocab_esperada = 0
+contador_vocab_ingresados = 0
+
+def set_cantidad_vocab(cantidad):
+    global cantidad_vocab_esperada, contador_vocab_ingresados, vocabularios
+    cantidad_vocab_esperada = cantidad
+    contador_vocab_ingresados = 0
+    vocabularios = {}  # Reiniciar por si había datos antes
+    return f"Debes ingresar {cantidad} vocabularios."
 
 def agregar_vocabulario(nombre, simbolos_str, cantidad_esperada):
+    global contador_vocab_ingresados, cantidad_vocab_esperada
+    if cantidad_vocab_esperada == 0:
+        return False, "Primero debes indicar la cantidad de vocabularios."
+
+    if contador_vocab_ingresados >= cantidad_vocab_esperada:
+        return False, f"Ya se ingresaron los {cantidad_vocab_esperada} vocabularios permitidos."
+
+    
     # separar, limpiar espacios y eliminar duplicados
     simbolos = [s.strip() for s in simbolos_str.split(",") if s.strip()]
     simbolos = list(set(simbolos)) # elimina duplicados
@@ -16,7 +33,12 @@ def agregar_vocabulario(nombre, simbolos_str, cantidad_esperada):
         return False, f"Error: Dijiste {cantidad_esperada} signos, pero ingresaste {len(simbolos)} únicos."
 
     vocabularios[nombre] = simbolos
-    return True, f"Vocabulario {nombre} agregado correctamente."
+    contador_vocab_ingresados += 1
+    
+    if contador_vocab_ingresados == cantidad_vocab_esperada:
+        return True, f"Vocabulario {nombre} agregado ({contador_vocab_ingresados}/{cantidad_vocab_esperada}). Ya completaste todos."
+    else:
+        return True, f"Vocabulario {nombre} agregado correctamente ({contador_vocab_ingresados}/{cantidad_vocab_esperada})."
 
 
 def obtener_vocabularios():

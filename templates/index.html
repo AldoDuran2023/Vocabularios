@@ -12,6 +12,18 @@
   <body class="bg-light">
     <div class="container py-4">
       <h1 class="text-center mb-4">Gestión de Vocabularios</h1>
+      <!-- Formulario para establecer cantidad de vocabularios -->
+      <div class="card">
+        <div class="card-header bg-primary text-white">Configurar</div>
+        <div class="card-body">
+          <form method="post">
+            <input type="hidden" name="action" value="set_cantidad" />
+            <label>Cantidad de vocabularios:</label>
+            <input type="number" name="cantidad_vocab" min="1" required />
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+          </form>
+        </div>
+      </div>
 
       <!-- Fila 1 -->
       <div class="row mb-4">
@@ -24,7 +36,15 @@
             <div class="card-body">
               <form method="post" class="row g-3">
                 <input type="hidden" name="action" value="add_vocab" />
-
+                <div class="col-md-4">
+                  <label class="form-label">Nombre</label>
+                  <input
+                    type="text"
+                    name="nombre"
+                    class="form-control"
+                    required
+                  />
+                </div>
                 <div class="col-md-4">
                   <label class="form-label">Cantidad de signos</label>
                   <input
@@ -32,16 +52,6 @@
                     name="cantidad_signos"
                     class="form-control"
                     min="1"
-                    required
-                  />
-                </div>
-
-                <div class="col-md-4">
-                  <label class="form-label">Nombre</label>
-                  <input
-                    type="text"
-                    name="nombre"
-                    class="form-control"
                     required
                   />
                 </div>
