@@ -14,16 +14,19 @@ def set_cantidad_vocab(cantidad):
 
 def agregar_vocabulario(nombre, simbolos_str, cantidad_esperada):
     global contador_vocab_ingresados, cantidad_vocab_esperada
+
     if cantidad_vocab_esperada == 0:
         return False, "Primero debes indicar la cantidad de vocabularios."
 
     if contador_vocab_ingresados >= cantidad_vocab_esperada:
         return False, f"Ya se ingresaron los {cantidad_vocab_esperada} vocabularios permitidos."
 
-    
+    if nombre in vocabularios:
+        return False, f"Error: Ya existe un vocabulario con el nombre '{nombre}'."
+
     # separar, limpiar espacios y eliminar duplicados
     simbolos = [s.strip() for s in simbolos_str.split(",") if s.strip()]
-    simbolos = list(set(simbolos)) # elimina duplicados
+    simbolos = list(set(simbolos))  # elimina duplicados
     simbolos = sorted(simbolos)
 
     if not simbolos:
@@ -34,11 +37,12 @@ def agregar_vocabulario(nombre, simbolos_str, cantidad_esperada):
 
     vocabularios[nombre] = simbolos
     contador_vocab_ingresados += 1
-    
+
     if contador_vocab_ingresados == cantidad_vocab_esperada:
         return True, f"Vocabulario {nombre} agregado ({contador_vocab_ingresados}/{cantidad_vocab_esperada}). Ya completaste todos."
     else:
         return True, f"Vocabulario {nombre} agregado correctamente ({contador_vocab_ingresados}/{cantidad_vocab_esperada})."
+
 
 
 def obtener_vocabularios():
@@ -51,12 +55,14 @@ def generar_cadenas_diferentes(nombre_vocab, cantidad):
     simbolos = vocabularios[nombre_vocab]
     cadenas = []
 
-    # Aseguramos longitudes únicas desde 1 hasta "cantidad"
+    # Generamos con longitudes únicas desde 1 hasta "cantidad"
     for longitud in range(1, cantidad + 1):
-        # Se construye una cadena con "longitud" símbolos
         cadena_simbolos = random.choices(simbolos, k=longitud)
         cadena = "".join(cadena_simbolos)
         cadenas.append(f"{cadena}   (longitud: {longitud})")
+
+    # Mezclamos las cadenas para que salgan en orden aleatorio
+    random.shuffle(cadenas)
 
     return cadenas
 
@@ -82,4 +88,4 @@ def generar_universo(nombre_vocab, minimo=20):
         generar_cadenas("", longitud)
         longitud += 1
 
-    return f"W({nombre_vocab}) = {{" + ",".join(universo[:minimo]) + "}}"
+    return f"W({nombre_vocab}) = {{{', '.join(universo[:minimo])}, ...}}"
