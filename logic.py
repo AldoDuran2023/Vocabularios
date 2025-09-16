@@ -4,6 +4,7 @@ import random
 vocabularios = {}  # diccionario vacío
 cantidad_vocab_esperada = 0
 contador_vocab_ingresados = 0
+universo = []
 
 def set_cantidad_vocab(cantidad):
     global cantidad_vocab_esperada, contador_vocab_ingresados, vocabularios
@@ -68,10 +69,10 @@ def generar_cadenas_diferentes(nombre_vocab, cantidad):
 
 def generar_universo(nombre_vocab, minimo=20):
     if nombre_vocab not in vocabularios:
-        return "Error: Vocabulario no existe"
+        return None  
 
     simbolos = vocabularios[nombre_vocab]
-    universo = ["Ø"]
+    universo = []
 
     def generar_cadenas(actual, longitud):
         if len(universo) >= minimo:
@@ -88,4 +89,79 @@ def generar_universo(nombre_vocab, minimo=20):
         generar_cadenas("", longitud)
         longitud += 1
 
-    return f"W({nombre_vocab}) = {{{', '.join(universo[:minimo])}, ...}}"
+    return universo 
+
+def formatear_universo(nombre_vocab, universo, minimo=20):
+    if not universo:
+        return f"W({nombre_vocab}) = {{Ø}}"
+    return f"W({nombre_vocab}) = {{Ø, {', '.join(universo[:minimo])}, ...}}"
+
+
+
+# Definición de propiedades
+def empieza_con_a(cadena):
+    return cadena.startswith("a")
+
+def termina_con_vocal(cadena):
+    return cadena[-1] in "aeiou"
+
+def longitud_par(cadena):
+    return len(cadena) % 2 == 0
+
+def contiene_b(cadena):
+    return "b" in cadena
+
+# Diccionario de propiedades disponibles
+propiedades_disponibles = {
+    "empieza_a": ("Empieza con 'a'", empieza_con_a),
+    "termina_vocal": ("Termina en vocal", termina_con_vocal),
+    "longitud_par": ("Longitud par", longitud_par),
+    "contiene_b": ("Contiene 'b'", contiene_b),
+}
+
+# Lista global de lenguajes generados
+lenguajes = {}
+
+# limpiar
+def limpiar():
+    global vocabularios, lenguajes, universo, cantidad_vocab_esperada, contador_vocab_ingresados
+    vocabularios = {}
+    lenguajes = {}
+    universo = None   
+    cantidad_vocab_esperada = 0
+    contador_vocab_ingresados = 0
+
+
+# Función para generar un lenguaje
+def generar_lenguaje(nombre_vocab, propiedades_ids):
+    if nombre_vocab not in vocabularios:
+        return False, "Error: Vocabulario no existe."
+
+    if len(lenguajes) >= 3:
+        return False, "Ya se alcanzó el máximo de 3 lenguajes."
+
+    props_seleccionadas = set(propiedades_ids)
+
+    # Verificar duplicados
+    for lname, datos in lenguajes.items():
+        if datos["props"] == props_seleccionadas and lname.endswith(f"({nombre_vocab})"):
+            return False, "Ya existe un lenguaje con esas propiedades para este vocabulario."
+
+    # Generar universo como lista
+    universo_list = generar_universo(nombre_vocab, minimo=50)
+    if not universo_list:
+        return False, "Error al generar el universo."
+
+    # Aplicar filtros
+    filtros = [propiedades_disponibles[p][1] for p in props_seleccionadas if p in propiedades_disponibles]
+    lenguaje = [cad for cad in universo_list if all(f(cad) for f in filtros)]
+
+    # Crear lenguaje
+    nombre_lenguaje = f"L{len(lenguajes)+1}({nombre_vocab})"
+    lenguajes[nombre_lenguaje] = {
+        "vocabulario": nombre_vocab,
+        "cadenas": lenguaje,
+        "props": props_seleccionadas
+    }
+
+    return True, f"Lenguaje {nombre_lenguaje} generado con {len(lenguaje)} cadenas."
