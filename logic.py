@@ -6,8 +6,8 @@ vocabularios = {}  # diccionario vacío
 def agregar_vocabulario(nombre, simbolos_str, cantidad_esperada):
     # separar, limpiar espacios y eliminar duplicados
     simbolos = [s.strip() for s in simbolos_str.split(",") if s.strip()]
-    simbolos = list(dict.fromkeys(simbolos))  # elimina duplicados, mantiene orden
-    simbolos = sorted(simbolos)  # para consistencia
+    simbolos = list(set(simbolos)) # elimina duplicados
+    simbolos = sorted(simbolos)
 
     if not simbolos:
         return False, "Error: Debes ingresar al menos un símbolo válido."
@@ -43,7 +43,7 @@ def generar_universo(nombre_vocab, minimo=20):
         return "Error: Vocabulario no existe"
 
     simbolos = vocabularios[nombre_vocab]
-    universo = []
+    universo = ["Ø"]
 
     def generar_cadenas(actual, longitud):
         if len(universo) >= minimo:
