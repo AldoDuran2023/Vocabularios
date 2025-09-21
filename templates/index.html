@@ -8,12 +8,14 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body class="bg-light">
     <div class="container py-4">
       <h1 class="text-center mb-4">Gestión de Vocabularios</h1>
-      <!-- Formulario para establecer cantidad de vocabularios -->
-      <div class="card">
+
+      <!-- (0) Ingresar cantidad de vocabularios -->
+      <div class="card mb-4">
         <div class="card-header bg-success text-white">
           Ingrese la cantidad de Alfabetos o vocabularios a Generar
         </div>
@@ -26,11 +28,21 @@
           </form>
         </div>
       </div>
-      <br />
 
-      <!-- Fila 1 -->
+      {% if cantidad_vocab_esperada > 0 %}
+      <!-- Reinicio disponible desde aquí -->
+      <div class="text-center my-4">
+        <form method="post">
+          <input type="hidden" name="action" value="reset" />
+          <button type="submit" class="btn btn-danger">
+            🔄 Reiniciar Todo
+          </button>
+        </form>
+      </div>
+      {% endif %} {% if cantidad_vocab_esperada > 0 %}
+      <!-- Sección para agregar vocabulario -->
       <div class="row mb-4">
-        <!-- (1) Agregar Vocabulario -->
+        <!-- Agregar Vocabulario -->
         <div class="col-md-6">
           <div class="card shadow-sm h-100">
             <div class="card-header bg-primary text-white">
@@ -58,7 +70,6 @@
                     required
                   />
                 </div>
-
                 <div class="col-md-4">
                   <label class="form-label">Símbolos</label>
                   <input
@@ -69,7 +80,6 @@
                     required
                   />
                 </div>
-
                 <div class="col-12 text-end">
                   <button type="submit" class="btn btn-success">Agregar</button>
                 </div>
@@ -78,7 +88,7 @@
           </div>
         </div>
 
-        <!-- (2) Vocabularios Registrados -->
+        <!-- Vocabularios Registrados -->
         <div class="col-md-6">
           <div class="card shadow-sm h-100">
             <div class="card-header bg-secondary text-white">
@@ -100,6 +110,9 @@
           </div>
         </div>
       </div>
+      {% endif %} {% if contador_vocab_ingresados == cantidad_vocab_esperada and
+      cantidad_vocab_esperada > 0 %}
+      <!-- Secciones disponibles cuando se completan los vocabularios -->
 
       <!-- Fila 2 -->
       <div class="row mb-4">
@@ -187,9 +200,7 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="container">
       <!-- (5) Generar Lenguajes -->
       <div class="row mb-4">
         <div class="col-md-12">
@@ -273,13 +284,7 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="text-center my-4">
-      <form method="post">
-        <input type="hidden" name="action" value="reset" />
-        <button type="submit" class="btn btn-danger">🔄 Reiniciar Todo</button>
-      </form>
+      {% endif %}
     </div>
 
     <!-- Bootstrap JS -->
@@ -297,19 +302,19 @@
             }
           });
         });
-        if (form) {
-          form.addEventListener("submit", function (e) {
-            const seleccionados = document.querySelectorAll(
-              ".propiedad-checkbox:checked"
-            );
-            if (seleccionados.length < 1) {
-              e.preventDefault(); // evita que se envíe
-              alert("Debes seleccionar al menos una propiedad.");
-            }
-          });
-        }
       });
     </script>
+
+    {% if mensaje_alerta %}
+    <script>
+      Swal.fire({
+        title: "Información",
+        text: "{{ mensaje_alerta }}",
+        icon: "info",
+        confirmButtonText: "OK",
+      });
+    </script>
+    {% endif %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>

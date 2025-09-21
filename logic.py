@@ -102,21 +102,38 @@ def formatear_universo(nombre_vocab, universo, minimo=20):
 def empieza_con_a(cadena):
     return cadena.startswith("a")
 
+def empieza_con_consonante(cadena):
+    return cadena[0] not in "aeiou"
+
 def termina_con_vocal(cadena):
     return cadena[-1] in "aeiou"
 
 def longitud_par(cadena):
     return len(cadena) % 2 == 0
 
+def longitud_inpar(cadena):
+    return len(cadena) % 2 != 0
+
 def contiene_b(cadena):
     return "b" in cadena
+
+# verificar si hay numeros en la cadena
+def contiene_numeros(cadena):
+    return any(char.isdigit() for char in cadena)
+
+def empieza_numero(cadena):
+    return cadena[0].isdigit()
 
 # Diccionario de propiedades disponibles
 propiedades_disponibles = {
     "empieza_a": ("Empieza con 'a'", empieza_con_a),
+    "empieza_consonante": ("Empieza con una cosonante", empieza_con_consonante),
     "termina_vocal": ("Termina en vocal", termina_con_vocal),
     "longitud_par": ("Longitud par", longitud_par),
+    "longitud_inpar": ("Longitud inpar", longitud_inpar),
     "contiene_b": ("Contiene 'b'", contiene_b),
+    "contiene_digitos": ("Contiene digitos", contiene_numeros),
+    "empieza_numero": ("Empieza con un numero", empieza_numero)
 }
 
 # Lista global de lenguajes generados
@@ -139,6 +156,9 @@ def generar_lenguaje(nombre_vocab, propiedades_ids):
 
     if len(lenguajes) >= 3:
         return False, "Ya se alcanzó el máximo de 3 lenguajes."
+    
+    if len(propiedades_ids) == 0:
+        return False, "Debes de seleccionar al menos una propiedad."
 
     props_seleccionadas = set(propiedades_ids)
 
@@ -148,7 +168,7 @@ def generar_lenguaje(nombre_vocab, propiedades_ids):
             return False, "Ya existe un lenguaje con esas propiedades para este vocabulario."
 
     # Generar universo como lista
-    universo_list = generar_universo(nombre_vocab, minimo=50)
+    universo_list = generar_universo(nombre_vocab, minimo=75)
     if not universo_list:
         return False, "Error al generar el universo."
 
