@@ -178,6 +178,12 @@ def generar_lenguaje(nombre_vocab, propiedades_ids):
 
     # Crear lenguaje
     nombre_lenguaje = f"L{len(lenguajes)+1}({nombre_vocab})"
+    
+    # Si no se generó ninguna cadena, devolver el conjunto {∅}
+    if len(lenguaje) == 0:
+        lenguaje = ["∅"]
+        
+    # Agrego el lenguaje creado a mi diccionario de lenguajes
     lenguajes[nombre_lenguaje] = {
         "vocabulario": nombre_vocab,
         "cadenas": lenguaje,
