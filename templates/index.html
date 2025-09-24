@@ -34,9 +34,7 @@
       <div class="text-center my-4">
         <form method="post">
           <input type="hidden" name="action" value="reset" />
-          <button type="submit" class="btn btn-danger">
-            🔄 Reiniciar Todo
-          </button>
+          <button type="submit" class="btn btn-info">Reiniciar Todo</button>
         </form>
       </div>
       {% endif %} {% if cantidad_vocab_esperada > 0 %}
@@ -216,7 +214,12 @@
                 <!-- Selección de vocabulario -->
                 <div class="col-md-4">
                   <label class="form-label">Seleccione vocabulario:</label>
-                  <select name="vocab" class="form-select" required>
+                  <select
+                    name="vocab"
+                    class="form-select"
+                    id="select_vocab"
+                    required
+                  >
                     {% for nombre in vocabularios.keys() %}
                     <option value="{{nombre}}">{{nombre}}</option>
                     {% endfor %}
@@ -228,21 +231,187 @@
                   <label class="form-label"
                     >Seleccione hasta 2 propiedades:</label
                   >
-                  <div class="d-flex flex-wrap gap-3">
-                    {% for pid, (pname, _) in propiedades.items() %}
-                    <div class="form-check">
-                      <input
-                        class="form-check-input propiedad-checkbox"
-                        type="checkbox"
-                        name="propiedades"
-                        value="{{pid}}"
-                        id="check_{{pid}}"
-                      />
-                      <label class="form-check-label" for="check_{{pid}}">
-                        {{pname}}
-                      </label>
+
+                  <div class="row">
+                    <!-- Caracteres -->
+                    <div class="col-md-4">
+                      <h6>Caracteres</h6>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="empieza_con"
+                          id="check_empieza_con"
+                        />
+                        <label class="form-check-label" for="check_empieza_con"
+                          >Empieza con</label
+                        >
+                        <select
+                          name="arg_empieza_con"
+                          class="form-select form-select-sm mt-1 d-none simbolos-select"
+                        ></select>
+                      </div>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="termina_con"
+                          id="check_termina_con"
+                        />
+                        <label class="form-check-label" for="check_termina_con"
+                          >Termina con</label
+                        >
+                        <select
+                          name="arg_termina_con"
+                          class="form-select form-select-sm mt-1 d-none simbolos-select"
+                        ></select>
+                      </div>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="contiene"
+                          id="check_contiene"
+                        />
+                        <label class="form-check-label" for="check_contiene"
+                          >Contiene</label
+                        >
+                        <select
+                          name="arg_contiene"
+                          class="form-select form-select-sm mt-1 d-none simbolos-select"
+                        ></select>
+                      </div>
                     </div>
-                    {% endfor %}
+
+                    <!-- Números -->
+                    <div class="col-md-4">
+                      <h6>Números</h6>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="contiene_digitos"
+                          id="check_contiene_digitos"
+                        />
+                        <label
+                          class="form-check-label"
+                          for="check_contiene_digitos"
+                          >Contiene dígitos</label
+                        >
+                      </div>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="empieza_numero"
+                          id="check_empieza_numero"
+                        />
+                        <label
+                          class="form-check-label"
+                          for="check_empieza_numero"
+                          >Empieza con número</label
+                        >
+                      </div>
+                    </div>
+
+                    <!-- Longitud -->
+                    <div class="col-md-4">
+                      <h6>Longitud</h6>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="longitud_exacta"
+                          id="check_longitud_exacta"
+                        />
+                        <label
+                          class="form-check-label"
+                          for="check_longitud_exacta"
+                          >Longitud exacta</label
+                        >
+                        <input
+                          type="number"
+                          name="arg_longitud_exacta"
+                          class="form-control form-control-sm mt-1 d-none"
+                        />
+                      </div>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="longitud_min"
+                          id="check_longitud_min"
+                        />
+                        <label class="form-check-label" for="check_longitud_min"
+                          >Longitud mínima</label
+                        >
+                        <input
+                          type="number"
+                          name="arg_longitud_min"
+                          class="form-control form-control-sm mt-1 d-none"
+                        />
+                      </div>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="longitud_max"
+                          id="check_longitud_max"
+                        />
+                        <label class="form-check-label" for="check_longitud_max"
+                          >Longitud máxima</label
+                        >
+                        <input
+                          type="number"
+                          name="arg_longitud_max"
+                          class="form-control form-control-sm mt-1 d-none"
+                        />
+                      </div>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="longitud_par"
+                          id="check_longitud_par"
+                        />
+                        <label class="form-check-label" for="check_longitud_par"
+                          >Longitud par</label
+                        >
+                      </div>
+
+                      <div class="form-check mb-2">
+                        <input
+                          class="form-check-input propiedad-checkbox"
+                          type="checkbox"
+                          name="propiedades"
+                          value="longitud_impar"
+                          id="check_longitud_impar"
+                        />
+                        <label
+                          class="form-check-label"
+                          for="check_longitud_impar"
+                          >Longitud impar</label
+                        >
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -263,17 +432,17 @@
                 {% for lname, data in lenguajes.items() %}
                 <div class="list-group-item">
                   <strong>{{ lname }}</strong><br />
-                  <span class="text-muted">
-                    Vocabulario: <em>{{ data.vocabulario }}</em> </span
+                  <span class="text-muted"
+                    >Vocabulario: <em>{{ data.vocabulario }}</em> </span
                   ><br />
                   <span class="text-muted">
                     Propiedades: {% for prop in data.props %}
                     <span class="badge bg-info text-dark">{{ prop }}</span>
                     {% endfor %} </span
                   ><br />
-                  <span class="small text-muted">
-                    Cadenas = { {{ data.cadenas | join(", ") }} }
-                  </span>
+                  <span class="small text-muted"
+                    >Cadenas = { {{ data.cadenas | join(", ") }} }</span
+                  >
                 </div>
                 {% endfor %}
               </div>
@@ -299,6 +468,42 @@
             if (seleccionados.length > 2) {
               this.checked = false; // desmarca el último
               alert("Solo puedes seleccionar hasta 2 propiedades.");
+            }
+          });
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const vocabSelect = document.getElementById("select_vocab");
+
+        function actualizarSimbolos() {
+          const vocab = vocabSelect.value;
+          fetch(`/get_simbolos/${vocab}`)
+            .then((res) => res.json())
+            .then((data) => {
+              document.querySelectorAll(".simbolos-select").forEach((sel) => {
+                sel.innerHTML = "";
+                data.simbolos.forEach((s) => {
+                  const opt = document.createElement("option");
+                  opt.value = s;
+                  opt.textContent = s;
+                  sel.appendChild(opt);
+                });
+              });
+            });
+        }
+
+        vocabSelect.addEventListener("change", actualizarSimbolos);
+        actualizarSimbolos(); // carga inicial
+
+        // Mostrar u ocultar inputs dinámicos
+        document.querySelectorAll(".form-check-input").forEach((chk) => {
+          chk.addEventListener("change", function () {
+            const related = this.parentElement.querySelector(
+              "select, input[type='number']"
+            );
+            if (related) {
+              related.classList.toggle("d-none", !this.checked);
             }
           });
         });

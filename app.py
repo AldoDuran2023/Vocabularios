@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import logic
 
 app = Flask(__name__)
@@ -57,8 +57,16 @@ def index():
         elif action == "generar_lenguaje":
             vocab = request.form.get("vocab")
             props = request.form.getlist("propiedades")
-            exito, mensaje = logic.generar_lenguaje(vocab, props)
-            mensaje_alerta = mensaje  
+
+            # Capturamos los argumentos adicionales
+            args_dict = {}
+            for pid in props:
+                arg_val = request.form.get(f"arg_{pid}", None)
+                if arg_val and arg_val.strip():
+                    args_dict[pid] = arg_val.strip()
+
+            exito, mensaje = logic.generar_lenguaje(vocab, props, args_dict)
+            mensaje_alerta = mensaje
 
 
         elif action == "reset":
@@ -79,6 +87,12 @@ def index():
         cantidad_vocab_esperada=logic.cantidad_vocab_esperada,
         contador_vocab_ingresados=logic.contador_vocab_ingresados 
     )
+
+
+@app.route("/get_simbolos/<vocab>")
+def get_simbolos(vocab):
+    simbolos = logic.obtener_vocabularios().get(vocab, [])
+    return jsonify({"simbolos": simbolos})
 
 
 if __name__ == "__main__":

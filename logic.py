@@ -60,7 +60,7 @@ def generar_cadenas_diferentes(nombre_vocab, cantidad):
     for longitud in range(1, cantidad + 1):
         cadena_simbolos = random.choices(simbolos, k=longitud)
         cadena = "".join(cadena_simbolos)
-        cadenas.append(f"{cadena}   (longitud: {longitud})")
+        cadenas.append(f"'{cadena}'   (longitud: {longitud})")
 
     # Mezclamos las cadenas para que salgan en orden aleatorio
     random.shuffle(cadenas)
@@ -98,42 +98,23 @@ def formatear_universo(nombre_vocab, universo, minimo=20):
 
 
 
-# Definición de propiedades
-def empieza_con_a(cadena):
-    return cadena.startswith("a")
-
-def empieza_con_consonante(cadena):
-    return cadena[0] not in "aeiou"
-
-def termina_con_vocal(cadena):
-    return cadena[-1] in "aeiou"
-
-def longitud_par(cadena):
-    return len(cadena) % 2 == 0
-
-def longitud_inpar(cadena):
-    return len(cadena) % 2 != 0
-
-def contiene_b(cadena):
-    return "b" in cadena
-
-# verificar si hay numeros en la cadena
-def contiene_numeros(cadena):
-    return any(char.isdigit() for char in cadena)
-
-def empieza_numero(cadena):
-    return cadena[0].isdigit()
-
 # Diccionario de propiedades disponibles
 propiedades_disponibles = {
-    "empieza_a": ("Empieza con 'a'", empieza_con_a),
-    "empieza_consonante": ("Empieza con una cosonante", empieza_con_consonante),
-    "termina_vocal": ("Termina en vocal", termina_con_vocal),
-    "longitud_par": ("Longitud par", longitud_par),
-    "longitud_inpar": ("Longitud inpar", longitud_inpar),
-    "contiene_b": ("Contiene 'b'", contiene_b),
-    "contiene_digitos": ("Contiene digitos", contiene_numeros),
-    "empieza_numero": ("Empieza con un numero", empieza_numero)
+    # Caracteres
+    "empieza_con": ("Empieza con", lambda cad, arg: cad.startswith(arg)),
+    "termina_con": ("Termina con", lambda cad, arg: cad.endswith(arg)),
+    "contiene": ("Contiene", lambda cad, arg: arg in cad),
+
+    # Números
+    "contiene_digitos": ("Contiene dígitos", lambda cad, _: any(c.isdigit() for c in cad)),
+    "empieza_numero": ("Empieza con un dígito", lambda cad, _: cad[0].isdigit()),
+
+    # Longitud
+    "longitud_exacta": ("Longitud exacta", lambda cad, arg: len(cad) == int(arg)),
+    "longitud_min": ("Longitud mínima", lambda cad, arg: len(cad) >= int(arg)),
+    "longitud_max": ("Longitud máxima", lambda cad, arg: len(cad) <= int(arg)),
+    "longitud_par": ("Longitud par", lambda cad, _: len(cad) % 2 == 0),
+    "longitud_impar": ("Longitud impar", lambda cad, _: len(cad) % 2 != 0),
 }
 
 # Lista global de lenguajes generados
@@ -150,7 +131,7 @@ def limpiar():
 
 
 # Función para generar un lenguaje
-def generar_lenguaje(nombre_vocab, propiedades_ids):
+def generar_lenguaje(nombre_vocab, propiedades_ids, args_dict):
     if nombre_vocab not in vocabularios:
         return False, "Error: Vocabulario no existe."
 
@@ -162,28 +143,32 @@ def generar_lenguaje(nombre_vocab, propiedades_ids):
 
     props_seleccionadas = set(propiedades_ids)
 
-    # Verificar duplicados
+    # Evitar duplicados
     for lname, datos in lenguajes.items():
         if datos["props"] == props_seleccionadas and lname.endswith(f"({nombre_vocab})"):
             return False, "Ya existe un lenguaje con esas propiedades para este vocabulario."
 
-    # Generar universo como lista
-    universo_list = generar_universo(nombre_vocab, minimo=75)
+    # Generar universo
+    universo_list = generar_universo(nombre_vocab, minimo=100)
     if not universo_list:
         return False, "Error al generar el universo."
 
-    # Aplicar filtros
-    filtros = [propiedades_disponibles[p][1] for p in props_seleccionadas if p in propiedades_disponibles]
-    lenguaje = [cad for cad in universo_list if all(f(cad) for f in filtros)]
+    # Aplicar filtros con argumentos
+    lenguaje = []
+    for cad in universo_list:
+        valido = True
+        for pid in props_seleccionadas:
+            if pid in propiedades_disponibles:
+                label, funcion = propiedades_disponibles[pid]
+                arg = args_dict.get(pid, None)  # puede venir vacío
+                if not funcion(cad, arg):
+                    valido = False
+                    break
+        if valido:
+            lenguaje.append(cad)
 
-    # Crear lenguaje
     nombre_lenguaje = f"L{len(lenguajes)+1}({nombre_vocab})"
-    
-    # Si no se generó ninguna cadena, devolver el conjunto {∅}
-    if len(lenguaje) == 0:
-        lenguaje = ["∅"]
-        
-    # Agrego el lenguaje creado a mi diccionario de lenguajes
+
     lenguajes[nombre_lenguaje] = {
         "vocabulario": nombre_vocab,
         "cadenas": lenguaje,
