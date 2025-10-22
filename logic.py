@@ -168,6 +168,10 @@ def generar_lenguaje(nombre_vocab, propiedades_ids, args_dict):
             lenguaje.append(cad)
 
     nombre_lenguaje = f"L{len(lenguajes)+1}({nombre_vocab})"
+    
+    # Si no hay cadenas que cumplan, agregar el vacio
+    if not lenguaje:
+        lenguaje = ["Ø"]
 
     lenguajes[nombre_lenguaje] = {
         "vocabulario": nombre_vocab,
